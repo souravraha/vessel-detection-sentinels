@@ -729,7 +729,7 @@ def detect_vessels(
     for index, label in enumerate(pred.itertuples()):
         scene_id = filename
         scene_ids[index] = scene_id
-        detect_id = "{}_{}".format(filename, index)
+        detect_id = "{}_{:03d}".format(filename, index)
         detect_ids[index] = detect_id
 
         if save_crops:
