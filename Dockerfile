@@ -23,6 +23,16 @@ RUN apt-get update -y && \
         libgeos-dev libpq-dev python3-pip apt-transport-https ca-certificates gnupg wget bzip2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements
+COPY requirements.txt /home/vessel_detection/requirements.txt
+
+# Install Python Packages via pip (system Python)
+RUN python3 -m pip install --no-cache-dir -U pip setuptools wheel && \
+    python3 -m pip install --no-cache-dir -U numpy==1.23.* cython && \
+    python3 -m pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu113 torch==1.13.* torchvision==0.14.* && \
+    python3 -m pip install --no-cache-dir -r /home/vessel_detection/requirements.txt
+
+
 # -------------------------------
 # 🔽 Minimal Miniforge (conda-forge only) Installation
 # -------------------------------
@@ -40,14 +50,6 @@ RUN conda config --system --set auto_activate_base false
 RUN conda create -y -n gis -c conda-forge python=3.10 geoai
 # -------------------------------
 
-# Copy requirements
-COPY requirements.txt /home/vessel_detection/requirements.txt
-
-# Install Python Packages via pip (system Python)
-RUN python3 -m pip install --no-cache-dir -U pip setuptools wheel && \
-    python3 -m pip install --no-cache-dir -U numpy==1.23.* cython && \
-    python3 -m pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu113 torch==1.13.* torchvision==0.14.* && \
-    python3 -m pip install --no-cache-dir -r /home/vessel_detection/requirements.txt
 
 # Set Working Directory and Prepare App
 WORKDIR /home/vessel_detection/src
