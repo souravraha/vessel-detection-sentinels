@@ -1,5 +1,6 @@
 # requirements.txt (remove torch/torchvision and add scipy pin)
 fastapi==0.103.*
+geoai-py[all]
 google-cloud-storage==2.5.*
 lightgbm==3.3.*
 mapcalc==0.2.*
