@@ -24,21 +24,20 @@ RUN apt-get update -y && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # -------------------------------
-# 🔽 Minimal Miniconda Installation
+# 🔽 Minimal Miniforge (conda-forge only) Installation
 # -------------------------------
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
-    bash miniconda.sh -b -p /opt/miniconda && \
-    rm miniconda.sh
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh && \
+    bash miniforge.sh -b -p /opt/conda && \
+    rm miniforge.sh
 
 # Add conda to PATH
-ENV PATH="/opt/miniconda/bin:${PATH}"
+ENV PATH="/opt/conda/bin:${PATH}"
 
-# Disable auto activate base (your requirement)
+# Disable auto-activation of base env (you'll activate manually)
 RUN conda config --system --set auto_activate_base false
 
-# Create environment and install geoai
-RUN conda create -y -n gis python=3.10 && \
-    conda install -y -n gis -c conda-forge geoai
+# Create environment and install geoai from conda-forge
+RUN conda create -y -n gis -c conda-forge python=3.10 geoai
 # -------------------------------
 
 # Copy requirements
