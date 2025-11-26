@@ -17,7 +17,7 @@ RUN apt-get update -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
     apt-get update && \
     apt-get install -y \
-        curl build-essential pkg-config python3-dev \
+        curl build-essential pkg-config python3-dev nano\
         gdal-bin libgdal-dev python3-gdal \
         proj-bin libproj-dev \
         libgeos-dev libpq-dev python3-pip apt-transport-https ca-certificates gnupg && \
