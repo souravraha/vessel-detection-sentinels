@@ -164,6 +164,7 @@ def prepare_inputs(paths_or_urls, work_dir="data/working", extract_dir="data/ext
 
                 # If extracted exists, skip downloading
                 if extracted_already_exists(local_archive_path, extract_dir):
+                    print(f"[SKIP DOWNLOAD] {u} (already extracted)")
                     staged.append(str(local_archive_path))  # pretend we "downloaded"
                 else:
                     futs.append(pool.submit(download_file, u, work_dir))
