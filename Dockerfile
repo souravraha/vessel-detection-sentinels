@@ -17,16 +17,34 @@ RUN apt-get update -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
     apt-get update && \
     apt-get install -y \
-        curl build-essential pkg-config python3-dev nano\
+        curl build-essential pkg-config python3-dev nano \
         gdal-bin libgdal-dev python3-gdal \
         proj-bin libproj-dev \
-        libgeos-dev libpq-dev python3-pip apt-transport-https ca-certificates gnupg && \
+        libgeos-dev libpq-dev python3-pip apt-transport-https ca-certificates gnupg wget bzip2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# -------------------------------
+# 🔽 Minimal Miniconda Installation
+# -------------------------------
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
+    bash miniconda.sh -b -p /opt/miniconda && \
+    rm miniconda.sh
+
+# Add conda to PATH
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+# Disable auto activate base (your requirement)
+RUN conda config --system --set auto_activate_base false
+
+# Create environment and install geoai
+RUN conda create -y -n gis python=3.10 && \
+    conda install -y -n gis -c conda-forge geoai
+# -------------------------------
 
 # Copy requirements
 COPY requirements.txt /home/vessel_detection/requirements.txt
 
-# Install Python Packages (use python3 -m pip to ensure the upgraded pip is used)
+# Install Python Packages via pip (system Python)
 RUN python3 -m pip install --no-cache-dir -U pip setuptools wheel && \
     python3 -m pip install --no-cache-dir -U numpy==1.23.* cython && \
     python3 -m pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu113 torch==1.13.* torchvision==0.14.* && \
