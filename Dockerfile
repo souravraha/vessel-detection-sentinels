@@ -17,20 +17,39 @@ RUN apt-get update -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
     apt-get update && \
     apt-get install -y \
-        curl build-essential pkg-config python3-dev \
+        curl build-essential pkg-config python3-dev nano \
         gdal-bin libgdal-dev python3-gdal \
         proj-bin libproj-dev \
-        libgeos-dev libpq-dev python3-pip apt-transport-https ca-certificates gnupg && \
+        libgeos-dev libpq-dev python3-pip apt-transport-https ca-certificates gnupg wget bzip2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
 COPY requirements.txt /home/vessel_detection/requirements.txt
 
-# Install Python Packages (use python3 -m pip to ensure the upgraded pip is used)
+# Install Python Packages via pip (system Python)
 RUN python3 -m pip install --no-cache-dir -U pip setuptools wheel && \
     python3 -m pip install --no-cache-dir -U numpy==1.23.* cython && \
     python3 -m pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu113 torch==1.13.* torchvision==0.14.* && \
     python3 -m pip install --no-cache-dir -r /home/vessel_detection/requirements.txt
+
+
+# -------------------------------
+# 🔽 Minimal Miniforge (conda-forge only) Installation
+# -------------------------------
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh && \
+    bash miniforge.sh -b -p /opt/conda && \
+    rm miniforge.sh
+
+# Add conda to PATH
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Disable auto-activation of base env (you'll activate manually)
+RUN conda config --system --set auto_activate_base false
+
+# Create environment and install geoai from conda-forge
+RUN conda create -y -n gis -c conda-forge python=3.10 geoai
+# -------------------------------
+
 
 # Set Working Directory and Prepare App
 WORKDIR /home/vessel_detection/src
